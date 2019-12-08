@@ -1,6 +1,6 @@
 ---
 title: "More information"
-author: "Guy Incognito"
+author: "Jiaqi Li and Mackie Zhou"
 date: "Last updated on `r Sys.Date()`"
 output:
   html_document:
@@ -26,5 +26,63 @@ Write a second `more_info.html` page going more in-depth for people who want mor
 1. No more than 500 words of text
 
 ```{r, echo = FALSE}
+# load packages
+library(tidyverse)
+```
+
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+# read the ecudational attainment df into R
+Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
+
+# select only the state names and the percentages
+Edu_percent <- Edu_complete %>%
+  select(State, contains("Percent")) %>% 
+  select(-(contains("MOE"))) %>% 
+  pivot_longer(names_to = "Education", 
+               values_to = "Percentage", 
+               cols = -State)
+  # rename(Less than high school graduate = Less than high school graduate - Percent,
+  #        High school graduate or equivalent = High school graduate \(includes equivalency\) - Percent,
+  #        Some college or associate\'s degree= Some college or associate\'s degree - Percent,
+  #        Bachelor\'s degree or higher - Percent)
+
+# Edu_percent_1 <- Edu_percent %>% 
+#   filter(State %in% c("Alabama", "Alaska", "Arizona", "Arkansas",
+#                       "California", "Colorado", "Connecticut", "Delaware",
+#                       "Florida", "Georgia",
+#                       "Idaho", "Hawaii", "Illinois"))
+# 
+# Edu_percent_2 <- Edu_percent %>% 
+#   filter(State %in% c("Indiana", "Iowa", 
+#                       "Kansas", "Kentucky", "Louisiana",
+#                       "Maine", "Maryland", "Massachusetts", "Michigan",
+#                       "Minnesota", "Mississippi", "Missouri", "Montana"))
+# 
+# Edu_percent_3 <- Edu_percent %>% 
+#   filter(State %in% c("Nebraska", "Nevada", "New Hampshire",
+#                       "New Jersey", "New Mexico", "New York",
+#                       "North Carolina", "North Dakota", "Ohio", "Oklahoma",
+#                       "Oregon", "Pennsylvania", "Rhode Island"))
+# 
+# Edu_percent_4 <- Edu_percent %>% 
+#   filter(State %in% c("South Carolina", "South Dakota", "Tennessee",
+#                       "Texas", "Utah", "Vermont", "Virginia", "Washington",
+#                       "West Virginia", "Wisconsin", "Wyoming",
+#                       "District of Columbia", "Puerto Rico"))
+
+# horizontal stacked bar graph of educational attainment by state
+ggplot(data = Edu_percent, 
+       mapping = aes(x = factor(State, levels = rev(levels(factor(State)))),
+                     y = Percentage, 
+                     fill = Education)) +
+  geom_bar(position="fill", 
+           stat="identity",
+           width = 0.7) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "State",
+       y = "Percentage",
+       legen = "Education Level") +
+  coord_flip() +
+  theme(text = element_text(size=15))
 
 ```
