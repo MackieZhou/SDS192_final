@@ -30,10 +30,19 @@ Write a second `more_info.html` page going more in-depth for people who want mor
 library(tidyverse)
 ```
 
-```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+```{r, echo = FALSE}
 # read the ecudational attainment df into R
 Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
 
+# read the suicide df into R
+suicide_by_state <- read_csv("Suicide_Mortality_by_State.csv")
+
+# read the 50 state names&codes df into R
+State_names <- read_csv("50State_names_and_codes.csv")
+
+```
+
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
 # select only the state names and the percentages
 Edu_percent <- Edu_complete %>%
   select(State, contains("Percent")) %>% 
@@ -81,8 +90,34 @@ ggplot(data = Edu_percent,
   scale_y_continuous(labels = scales::percent) +
   labs(x = "State",
        y = "Percentage",
-       legen = "Education Level") +
+       fill = "Educational Attainment",
+       title = "Estimate Educational Attainment of People Aged 18-24 by State in 2017") +
   coord_flip() +
   theme(text = element_text(size=15))
 
 ```
+
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+# select only data in 2017 and optimize the df
+suicide_2017 <- suicide_by_state %>% 
+  filter(YEAR=="2017") %>% 
+  left_join(State_names, by = c("STATE" = "Code")) %>% 
+  rename(CODE = STATE,
+         STATE = State) %>%
+  select(STATE, CODE, DEATHS, RATE)
+
+# horizontal bar graph of suicide rate by state
+ggplot(data = suicide_2017, 
+       mapping = aes(x = factor(STATE, levels = rev(levels(factor(STATE)))),
+                     y = RATE)) +
+  geom_col(fill="CornflowerBlue",
+           width = 0.75) +
+  # scale_y_continuous(labels = scales::percent) +
+  labs(x = "State",
+       y = "Suicide Death Rate(%)",
+       title = "Suicide Death Rate by State in 2017") +
+  coord_flip() +
+  theme(text = element_text(size=20))
+
+```
+
