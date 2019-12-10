@@ -40,6 +40,9 @@ suicide_by_state <- read_csv("Suicide_Mortality_by_State.csv")
 # read the 50 state names&codes df into R
 State_names <- read_csv("50State_names_and_codes.csv")
 
+# read the education attainment w/ score df into R
+Edu_score_by_state <- read_csv("Estimate_Educational_attainment_weighted.csv")
+
 ```
 
 ```{r, echo = FALSE, fig.height = 15, fig.width = 12}
@@ -119,5 +122,22 @@ ggplot(data = suicide_2017,
   coord_flip() +
   theme(text = element_text(size=20))
 
+```
+
+```{r, echo = FALSE}
+edu_score_suicide <- suicide_2017 %>% 
+  inner_join(Edu_score_by_state, by = c("STATE" = "State")) %>% 
+  select(-Id, -Id2) %>% 
+  rename(Death_Rate = RATE, Education_Level = score) %>% 
+  select(STATE, Death_Rate, Education_Level, everything())
+# edu_score_suicide
+
+ggplot(data = edu_score_suicide, mapping = aes(x = Education_Level, 
+                                               y = Death_Rate)) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Education Level Score",
+       Y = "Suicide Death Rate (%)",
+       title = "Education Level Score and Suicide Death Rate of 50 States in the US in 2017")
 ```
 
