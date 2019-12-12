@@ -27,7 +27,48 @@ Write an intro `index.html` page in blog-post style that summarizes your work. I
 ```{r, echo = FALSE}
 # load packages
 library(tidyverse)
+```
+
+
+```{r, echo = FALSE}
+# read the ecudational attainment df into R
+Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
+
+# read the suicide df into R
+suicide_by_state <- read_csv("Suicide_Mortality_by_State.csv")
+
+# read the 50 state names&codes df into R
+State_names <- read_csv("50State_names_and_codes.csv")
+
+# read the education attainment w/ score df into R
+Edu_score_by_state <- read_csv("Estimate_Educational_attainment_weighted.csv")
 
 ```
 
 
+```{r, echo = FALSE}
+# select only data in 2017 and optimize the df
+suicide_2017 <- suicide_by_state %>% 
+  filter(YEAR=="2017") %>% 
+  left_join(State_names, by = c("STATE" = "Code")) %>% 
+  rename(CODE = STATE,
+         STATE = State) %>%
+  select(STATE, CODE, DEATHS, RATE)
+
+edu_score_suicide <- suicide_2017 %>% 
+  inner_join(Edu_score_by_state, by = c("STATE" = "State")) %>% 
+  select(-Id, -Id2) %>% 
+  rename(Death_Rate = RATE, Education_Level = score) %>% 
+  select(STATE, Death_Rate, Education_Level, everything())
+# edu_score_suicide
+
+edu_suicide_scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = TRUE) +
+  labs(x = "Education Level",
+       y = "Suicide Death Rate",
+       title = "Education Level Score and Suicide Death Rate of 50 US States in 2017")
+edu_suicide_scatter
+
+```

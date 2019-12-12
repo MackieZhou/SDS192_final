@@ -28,7 +28,15 @@ Write a second `more_info.html` page going more in-depth for people who want mor
 ```{r, echo = FALSE}
 # load packages
 library(tidyverse)
+library(gridExtra)
+
+library(sf)
+library(maps)
+library(USAboundaries)
+library(plotly)
+library(widgetframe)
 ```
+
 
 ```{r, echo = FALSE}
 # read the ecudational attainment df into R
@@ -40,10 +48,59 @@ suicide_by_state <- read_csv("Suicide_Mortality_by_State.csv")
 # read the 50 state names&codes df into R
 State_names <- read_csv("50State_names_and_codes.csv")
 
-# read the education attainment w/ score df into R
-Edu_score_by_state <- read_csv("Estimate_Educational_attainment_weighted.csv")
+# US_map
+US_map<-USAboundaries::us_states(resolution = "high") %>%
+  mutate(lon = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[1]]),
+         lat = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[2]]))
 
 ```
+
+
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+# select only data in 2017 and optimize the df
+suicide_2017 <- suicide_by_state %>% 
+  filter(YEAR=="2017") %>% 
+  left_join(State_names, by = c("STATE" = "Code")) %>% 
+  rename(CODE = STATE,
+         STATE = State) %>%
+  arrange( RATE ) %>% 
+  select(STATE, CODE, DEATHS, RATE)
+
+# horizontal bar graph of suicide rate by state
+suicide <- ggplot(data = suicide_2017, 
+       mapping = aes(x = reorder(STATE, -desc(RATE)),
+                     y = RATE)) +
+  geom_col(fill="CornflowerBlue",
+           width = 0.75) +
+  # scale_y_continuous(labels = scales::percent) +
+  labs(x = "State",
+       y = "Suicide Death Rate(%)",
+       title = "Suicide Death Rate by State in 2017") +
+  # theme(text = element_text(size=15)) +
+  coord_flip()
+suicide
+
+```
+
+
+```{r, echo = FALSE}
+#Suicide Rate by State map
+suicide_map_df<- US_map %>% 
+  left_join(suicide_2017, by=c("stusps"="CODE"))
+
+suicide_map <- ggplot()+
+  geom_sf(data = suicide_map_df,
+          aes(fill = RATE), 
+          color = "white") +
+  scale_fill_gradient(low = "#86e884", high = "#244024") +
+  coord_sf(xlim = c(-170, -60), ylim = c(24, 73), expand = FALSE)
+suicide_map
+
+# ggplotly(suicide_map) %>%
+#   widgetframe::frameWidget()
+
+```
+
 
 ```{r, echo = FALSE, fig.height = 15, fig.width = 12}
 # select only the state names and the percentages
@@ -52,41 +109,20 @@ Edu_percent <- Edu_complete %>%
   select(-(contains("MOE"))) %>% 
   pivot_longer(names_to = "Education", 
                values_to = "Percentage", 
-               cols = -State)
-  # rename(Less than high school graduate = Less than high school graduate - Percent,
-  #        High school graduate or equivalent = High school graduate \(includes equivalency\) - Percent,
-  #        Some college or associate\'s degree= Some college or associate\'s degree - Percent,
-  #        Bachelor\'s degree or higher - Percent)
+               cols = -State) %>% 
+  mutate(Education = str_replace_all(Education, " - Percent", ""))
 
-# Edu_percent_1 <- Edu_percent %>% 
-#   filter(State %in% c("Alabama", "Alaska", "Arizona", "Arkansas",
-#                       "California", "Colorado", "Connecticut", "Delaware",
-#                       "Florida", "Georgia",
-#                       "Idaho", "Hawaii", "Illinois"))
-# 
-# Edu_percent_2 <- Edu_percent %>% 
-#   filter(State %in% c("Indiana", "Iowa", 
-#                       "Kansas", "Kentucky", "Louisiana",
-#                       "Maine", "Maryland", "Massachusetts", "Michigan",
-#                       "Minnesota", "Mississippi", "Missouri", "Montana"))
-# 
-# Edu_percent_3 <- Edu_percent %>% 
-#   filter(State %in% c("Nebraska", "Nevada", "New Hampshire",
-#                       "New Jersey", "New Mexico", "New York",
-#                       "North Carolina", "North Dakota", "Ohio", "Oklahoma",
-#                       "Oregon", "Pennsylvania", "Rhode Island"))
-# 
-# Edu_percent_4 <- Edu_percent %>% 
-#   filter(State %in% c("South Carolina", "South Dakota", "Tennessee",
-#                       "Texas", "Utah", "Vermont", "Virginia", "Washington",
-#                       "West Virginia", "Wisconsin", "Wyoming",
-#                       "District of Columbia", "Puerto Rico"))
+Edu_percent <- arrange(Edu_percent, Education, Percentage)
+Edu_percent$State <- factor(Edu_percent$State, levels = unique(Edu_percent$State)) 
 
-# horizontal stacked bar graph of educational attainment by state
-ggplot(data = Edu_percent, 
-       mapping = aes(x = factor(State, levels = rev(levels(factor(State)))),
+edu <- ggplot(data = Edu_percent, 
+       mapping = aes(x = State,
                      y = Percentage, 
-                     fill = Education)) +
+                     fill = factor(Education, 
+                                   levels=c("Less than high school graduate",
+                                            "High school graduate (includes equivalency)",
+                                            "Some college or associate's degree",
+                                            "Bachelor's degree or higher")))) +
   geom_bar(position="fill", 
            stat="identity",
            width = 0.7) +
@@ -96,48 +132,58 @@ ggplot(data = Edu_percent,
        fill = "Educational Attainment",
        title = "Estimate Educational Attainment of People Aged 18-24 by State in 2017") +
   coord_flip() +
-  theme(text = element_text(size=15))
+  # theme(text = element_text(size=15)) +
+  # guides(fill=guide_legend(ncol=1)) +
+  guides(fill = guide_legend(reverse=TRUE, ncol=1)) +
+  theme(legend.position="bottom")
+edu
 
 ```
 
-```{r, echo = FALSE, fig.height = 15, fig.width = 12}
-# select only data in 2017 and optimize the df
-suicide_2017 <- suicide_by_state %>% 
-  filter(YEAR=="2017") %>% 
-  left_join(State_names, by = c("STATE" = "Code")) %>% 
-  rename(CODE = STATE,
-         STATE = State) %>%
-  select(STATE, CODE, DEATHS, RATE)
 
-# horizontal bar graph of suicide rate by state
-ggplot(data = suicide_2017, 
-       mapping = aes(x = factor(STATE, levels = rev(levels(factor(STATE)))),
-                     y = RATE)) +
-  geom_col(fill="CornflowerBlue",
-           width = 0.75) +
-  # scale_y_continuous(labels = scales::percent) +
-  labs(x = "State",
-       y = "Suicide Death Rate(%)",
-       title = "Suicide Death Rate by State in 2017") +
-  coord_flip() +
-  theme(text = element_text(size=20))
+```{r, echo = FALSE}
 
+#Education Attainment Map by State in U.S
+edu_map_df<- US_map %>% 
+  left_join(Edu_complete,by=c("name"="State")) %>% 
+  filter(stusps != "DC")
+
+edu_map <- ggplot()+
+  geom_sf(data = edu_map_df,
+        aes(fill = score), 
+        color = "white") +
+  scale_fill_gradient(low = "lightblue", 
+                      high = "#06154f") +
+  coord_sf(xlim = c(-170, -60), 
+           ylim = c(24, 72), 
+           expand = FALSE)
+edu_map
+
+# ggplotly(edu_map) %>%
+#   widgetframe::frameWidget()
 ```
+
 
 ```{r, echo = FALSE}
 edu_score_suicide <- suicide_2017 %>% 
-  inner_join(Edu_score_by_state, by = c("STATE" = "State")) %>% 
+  inner_join(Edu_complete, by = c("STATE" = "State")) %>% 
   select(-Id, -Id2) %>% 
   rename(Death_Rate = RATE, Education_Level = score) %>% 
   select(STATE, Death_Rate, Education_Level, everything())
 # edu_score_suicide
 
-ggplot(data = edu_score_suicide, mapping = aes(x = Education_Level, 
-                                               y = Death_Rate)) + 
+scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
   geom_point() +
-  geom_smooth(method = "lm") +
-  labs(x = "Education Level Score",
-       Y = "Suicide Death Rate (%)",
-       title = "Education Level Score and Suicide Death Rate of 50 States in the US in 2017")
+  geom_smooth(method = "lm", 
+              se = TRUE) +
+  labs(x = "Education Level",
+       y = "Suicide Death Rate",
+       title = "Education Level Score and Suicide Death Rate of 50 US States in 2017")
+scatter
+
+```
+
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+# grid.arrange(edu, scatter, ncol=2)
 ```
 
