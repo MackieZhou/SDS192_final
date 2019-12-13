@@ -2,11 +2,11 @@
 
 __Final Project for SDS 192__
 
-## Blogpost
+## [Blogpost](https://mackiezhou.github.io/SDS192_final/index.html)
   1. Background
   1. Conclusion & Significance
 
-## More info
+## [More info](https://mackiezhou.github.io/SDS192_final/more_info.html)
   1. Suicide Death Rate by State in 2017 
   
       (Interactive Map)
