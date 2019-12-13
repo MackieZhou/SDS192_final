@@ -14,14 +14,9 @@ output:
 Comments in HTML are like this! 
 -->
 
-# How does education level affect suicide rate?
+# How does education level relate to suicide rate?
 
 In this section, you will see each state or region's educational attainment distribution and suicide rate.
-
-## Suicide and Education
-
-Write a second `more_info.html` page going more in-depth for people who want more details. In should have
-
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 # Set R chunk default options:
@@ -37,13 +32,14 @@ knitr::opts_chunk$set(
 ```{r, echo = FALSE}
 # load packages
 library(tidyverse)
-library(gridExtra)
 
 library(sf)
 library(maps)
 library(USAboundaries)
 library(plotly)
 library(widgetframe)
+
+library(patchwork)
 
 # read the ecudational attainment df into R
 Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
@@ -67,7 +63,7 @@ Suicide is one of the several major causes of death in the US. Suicide death rat
 
 From the map, we find that the west has higher overall suicide death rate than the east, while a strict geographic trend cannot be observed. Therefore, we want to explore __other factors that may account for the various suicide death rates among states__ in the US.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.height = 15, fig.width = 12}
 # select only data in 2017 and optimize the df
 suicide_2017 <- suicide_by_state %>% 
   filter(YEAR=="2017") %>% 
@@ -76,19 +72,19 @@ suicide_2017 <- suicide_by_state %>%
          STATE = State) %>%
   arrange( RATE ) %>% 
   select(STATE, CODE, DEATHS, RATE)
-# 
-# # horizontal bar graph of suicide rate by state
-# suicide <- ggplot(data = suicide_2017, 
-#        mapping = aes(x = reorder(STATE, -desc(RATE)),
-#                      y = RATE)) +
-#   geom_col(fill="CornflowerBlue",
-#            width = 0.75) +
-#   # scale_y_continuous(labels = scales::percent) +
-#   labs(x = "State",
-#        y = "Suicide Death Rate(%)",
-#        title = "Suicide Death Rate by State in 2017") +
-#   # theme(text = element_text(size=15)) +
-#   coord_flip()
+
+# horizontal bar graph of suicide rate by state
+suicide <- ggplot(data = suicide_2017,
+       mapping = aes(x = reorder(STATE, -desc(RATE)),
+                     y = RATE)) +
+  geom_col(fill="CornflowerBlue",
+           width = 0.75) +
+  # scale_y_continuous(labels = scales::percent) +
+  labs(x = "State",
+       y = "Suicide Death Rate(%)",
+       title = "Suicide Death Rate by State in 2017") +
+  # theme(text = element_text(size=15)) +
+  coord_flip()
 # suicide
 
 
@@ -107,10 +103,6 @@ suicide_map <- ggplot()+
 
 ggplotly(suicide_map) %>%
   widgetframe::frameWidget()
-# 
-# grid.arrange(suicide,
-#              arrangeGrob(suicide_map, NA, nrow = 2),
-#              ncol = 2)
 
 ```
 
@@ -155,27 +147,35 @@ edu <- ggplot(data = Edu_percent,
   # guides(fill=guide_legend(ncol=1)) +
   guides(fill = guide_legend(reverse=TRUE, ncol=1)) +
   theme(legend.position="bottom")
-edu
+# edu
 
-# 
-# #Education Attainment Map by State in U.S
-# edu_map_df<- US_map %>% 
-#   left_join(Edu_complete,by=c("name"="State")) %>% 
-#   filter(stusps != "DC")
-# 
-# edu_map <- ggplot()+
-#   geom_sf(data = edu_map_df,
-#         aes(fill = score), 
-#         color = "white") +
-#   scale_fill_gradient(low = "lightblue", 
-#                       high = "#06154f") +
-#   coord_sf(xlim = c(-170, -60), 
-#            ylim = c(24, 72), 
-#            expand = FALSE)
+
+#Education Attainment Map by State in U.S
+edu_map_df<- US_map %>%
+  left_join(Edu_complete,by=c("name"="State")) %>%
+  filter(stusps != "DC")
+
+edu_map <- ggplot()+
+  geom_sf(data = edu_map_df,
+        aes(fill = score),
+        color = "white") +
+  scale_fill_gradient(low = "lightblue",
+                      high = "#06154f") +
+  coord_sf(xlim = c(-170, -60),
+           ylim = c(24, 72),
+           expand = FALSE)
 # edu_map
 
-# ggplotly(edu_map) %>%
-#   widgetframe::frameWidget()
+layout <- "
+  AB
+  AB
+  A#
+  A#
+  A#"
+  
+edu + edu_map +
+  plot_layout(design = layout)
+
 ```
 
 ## Relationship between suicide death rate and education level
@@ -202,8 +202,3 @@ scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
 scatter
 
 ```
-
-```{r, echo = FALSE, fig.height = 15, fig.width = 12}
-# grid.arrange(edu, scatter, ncol=2)
-```
-
