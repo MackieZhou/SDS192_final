@@ -25,7 +25,7 @@ In this section, you will see each state or region's educational attainment dist
 # -set default figure widths and heights for all code blocks, unless you 
 #  override them
 knitr::opts_chunk$set(
-  message = FALSE, warning = FALSE, fig.width = 16/2, fig.height = 9/2
+  message = FALSE, warning = FALSE
 )
 ```
 
