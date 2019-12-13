@@ -14,16 +14,25 @@ output:
 Comments in HTML are like this! 
 -->
 
-# SECTION NAME
+# How does education level affect suicide rate?
 
-Write your "more information" section here.
+In this section, you will see each state or region's educational attainment distribution and suicide rate.
 
-## Subsection name
+## Suicide and Education
 
 Write a second `more_info.html` page going more in-depth for people who want more details. In should have
 
-1. Between 2-3 more visualizations.
-1. No more than 500 words of text
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# Set R chunk default options:
+# -do not output all R messages in html report
+# -do not output all R warnings in html report
+# -set default figure widths and heights for all code blocks, unless you 
+#  override them
+knitr::opts_chunk$set(
+  message = FALSE, warning = FALSE, fig.width = 16/2, fig.height = 9/2
+)
+```
 
 ```{r, echo = FALSE}
 # load packages
@@ -53,6 +62,10 @@ US_map<-USAboundaries::us_states(resolution = "high") %>%
 ```
 
 ## Suicide death rate
+
+Suicide is one of the several major causes of death in the US. Suicide death rate varies significantly across the nation. The data of suicide mortality by state is from _National Center for Health Statistics_, adjusted for differences in age-distribution and population size. From the data, we see that Montana has the highest suicide death rate of 28.9%, while New York has the lowest suicide death rate of 8.1%. The range is __20.8%__.
+
+From the map, we find that the west has higher overall suicide death rate than the east, while a strict geographic trend cannot be observed. Therefore, we want to explore __other factors that may account for the various suicide death rates among states__ in the US.
 
 ```{r, echo = FALSE}
 # select only data in 2017 and optimize the df
@@ -102,6 +115,11 @@ ggplotly(suicide_map) %>%
 ```
 
 ## Estimate educational attainment
+
+One of the many possible reasons that account for the various suicide death rate is education level. Educational attainment is defined as the highest level of education that an individual has completed. The Estimate Educational Attainment data is from the United States Census Bureau. District of Columbia, followed by Massachusetts, has the highest percent(21.8%) of people aged 18-24 holding a bachelor or higher degree; while Nevada has the lowest percent(5.3%). The range is __16.5%__.
+
+Below you can find a stacked bar graph of educational attainment of 52 states and regions in the US. States and regions are in the __descending order__ of percentages of people holding a bachelor or higher degree.
+
 
 ```{r, echo = FALSE, fig.height = 15, fig.width = 12}
 # select only the state names and the percentages
@@ -161,6 +179,10 @@ edu
 ```
 
 ## Relationship between suicide death rate and education level
+
+(The education level raw score is calculated using the equation: score = (less than high school graduate%)^1 + (high school graduate%)^2 + (some college or associate’s degree%)^3 + (bachelor’s degree or higher%)^4. The raw score is then adjusted, with Massachusetts’ score set to 100.）
+
+__Education attainment score is negatively correlate with suicide rate__. As indicated by the scatter plot, higher suicide rates are more likely to occur in states where overall education attainment is low.
 
 ```{r, echo = FALSE}
 edu_score_suicide <- suicide_2017 %>% 
