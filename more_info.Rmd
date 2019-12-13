@@ -63,7 +63,7 @@ Suicide is one of the several major causes of death in the US. Suicide death rat
 
 From the map, we find that the west has higher overall suicide death rate than the east, while a strict geographic trend cannot be observed. Therefore, we want to explore __other factors that may account for the various suicide death rates among states__ in the US.
 
-```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+```{r, echo = FALSE}
 # select only data in 2017 and optimize the df
 suicide_2017 <- suicide_by_state %>% 
   filter(YEAR=="2017") %>% 
