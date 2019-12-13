@@ -1,5 +1,5 @@
 ---
-title: "More information"
+title: "How does education level relate to suicide rate?"
 author: "Jiaqi Li and Mackie Zhou"
 date: "Last updated on `r Sys.Date()`"
 output:
@@ -9,12 +9,7 @@ output:
     toc_float: true
     df_print: kable
 ---
-
-<!--
-Comments in HTML are like this! 
--->
-
-# How does education level relate to suicide rate?
+ 
 
 In this section, you will see each state or region's educational attainment distribution and suicide rate.
 
@@ -32,13 +27,11 @@ knitr::opts_chunk$set(
 ```{r, echo = FALSE}
 # load packages
 library(tidyverse)
-
 library(sf)
 library(maps)
 library(USAboundaries)
 library(plotly)
 library(widgetframe)
-
 library(patchwork)
 
 # read the ecudational attainment df into R
@@ -57,7 +50,7 @@ US_map<-USAboundaries::us_states(resolution = "high") %>%
 
 ```
 
-## Suicide death rate
+# Suicide Seath Rate
 
 Suicide is one of the several major causes of death in the US. Suicide death rate varies significantly across the nation. The data of suicide mortality by state is from _National Center for Health Statistics_, adjusted for differences in age-distribution and population size. From the data, we see that Montana has the highest suicide death rate of 28.9%, while New York has the lowest suicide death rate of 8.1%. The range is __20.8%__.
 
@@ -97,7 +90,10 @@ suicide_map <- ggplot()+
           aes(fill = RATE), 
           color = "white") +
   scale_fill_gradient(low = "#86e884", high = "#244024") +
-  labs(x = "Longitude", y = "Latitude", fill = "Suicide Death Rate") +
+  labs(x = "Longitude", 
+       y = "Latitude", 
+       fill = "Suicide Death Rate",
+       title = "Suicide Rate by State") +
   coord_sf(xlim = c(-170, -60), ylim = c(24, 72), expand = FALSE)
 # suicide_map
 
@@ -106,14 +102,14 @@ ggplotly(suicide_map) %>%
 
 ```
 
-## Estimate educational attainment
+# Estimate Educational Attainment
 
 One of the many possible reasons that account for the various suicide death rate is education level. Educational attainment is defined as the highest level of education that an individual has completed. The Estimate Educational Attainment data is from the United States Census Bureau. District of Columbia, followed by Massachusetts, has the highest percent(21.8%) of people aged 18-24 holding a bachelor or higher degree; while Nevada has the lowest percent(5.3%). The range is __16.5%__.
 
 Below you can find a stacked bar graph of educational attainment of 52 states and regions in the US. States and regions are in the __descending order__ of percentages of people holding a bachelor or higher degree.
 
 
-```{r, echo = FALSE, fig.height = 15, fig.width = 12}
+```{r, echo = FALSE, fig.height = 16, fig.width = 9}
 # select only the state names and the percentages
 Edu_percent <- Edu_complete %>%
   select(State, contains("Percent")) %>% 
@@ -141,7 +137,7 @@ edu <- ggplot(data = Edu_percent,
   labs(x = "State",
        y = "Percentage",
        fill = "Educational Attainment",
-       title = "Estimate Educational Attainment of People Aged 18-24 by State in 2017") +
+       title = "Estimate Educational Attainment\nof People Aged 18-24\nby States in 2017") +
   coord_flip() +
   # theme(text = element_text(size=15)) +
   # guides(fill=guide_legend(ncol=1)) +
@@ -156,19 +152,21 @@ edu_map_df<- US_map %>%
   filter(stusps != "DC")
 
 edu_map <- ggplot()+
-  geom_sf(data = edu_map_df,
-        aes(fill = score),
-        color = "white") +
+  geom_sf(data = edu_map_df, aes(fill = score), color = "white") +
   scale_fill_gradient(low = "lightblue",
                       high = "#06154f") +
   coord_sf(xlim = c(-170, -60),
            ylim = c(24, 72),
-           expand = FALSE)
+           expand = FALSE) +
+  labs(x = "Longitude", 
+       y = "Latitude", 
+       fill = "Education\nLevel\nScore",
+       title = "Education Level Score by State")
 # edu_map
 
 layout <- "
   AB
-  AB
+  A#
   A#
   A#
   A#"
@@ -178,7 +176,7 @@ edu + edu_map +
 
 ```
 
-## Relationship between suicide death rate and education level
+# Relationship between Suicide Death Rate and Education Level
 
 (The education level raw score is calculated using the equation: score = (less than high school graduate%)^1 + (high school graduate%)^2 + (some college or associate’s degree%)^3 + (bachelor’s degree or higher%)^4. The raw score is then adjusted, with Massachusetts’ score set to 100.）
 
@@ -202,3 +200,7 @@ scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
 scatter
 
 ```
+
+# Conclusion & Significance
+
+__Moderate negative correlation__ is found between education attainment and suicide rate, which means that the higher the education attainment, the lower the suicide rate. Possible explanation for this result could be that people who do not drop out of school tend to have better family background, thus they are less likely to have childhood trauma (abusive parents). The result emphasizes the importance of social determinants in suicide risk. 
