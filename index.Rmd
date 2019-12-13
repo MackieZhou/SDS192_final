@@ -14,23 +14,37 @@ output:
 Comments in HTML are like this! 
 -->
 
-# SECTION NAME
+# How does education level affect suicide rate?
 
 
-## Subsection name
+## Suicide and Education
 
 Write an intro `index.html` page in blog-post style that summarizes your work. It should have
 
 1. One visualization that best summarizes your work.
 1. No more than 200 words of text
 
-```{r, echo = FALSE}
-# load packages
-library(tidyverse)
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# Set R chunk default options:
+# -do not output all R messages in html report
+# -do not output all R warnings in html report
+# -set default figure widths and heights for all code blocks, unless you 
+#  override them
+knitr::opts_chunk$set(
+  message = FALSE, warning = FALSE, fig.width = 16/2, fig.height = 9/2
+)
 ```
 
-
 ```{r, echo = FALSE}
+library(tidyverse)
+library(gridExtra)
+
+library(sf)
+library(maps)
+library(USAboundaries)
+library(plotly)
+library(widgetframe)
+
 # read the ecudational attainment df into R
 Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
 
@@ -40,8 +54,10 @@ suicide_by_state <- read_csv("Suicide_Mortality_by_State.csv")
 # read the 50 state names&codes df into R
 State_names <- read_csv("50State_names_and_codes.csv")
 
-# read the education attainment w/ score df into R
-Edu_score_by_state <- read_csv("Estimate_Educational_attainment_weighted.csv")
+# US_map
+US_map<-USAboundaries::us_states(resolution = "high") %>%
+  mutate(lon = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[1]]),
+         lat = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[2]]))
 
 ```
 
@@ -53,22 +69,22 @@ suicide_2017 <- suicide_by_state %>%
   left_join(State_names, by = c("STATE" = "Code")) %>% 
   rename(CODE = STATE,
          STATE = State) %>%
+  arrange( RATE ) %>% 
   select(STATE, CODE, DEATHS, RATE)
 
 edu_score_suicide <- suicide_2017 %>% 
-  inner_join(Edu_score_by_state, by = c("STATE" = "State")) %>% 
+  inner_join(Edu_complete, by = c("STATE" = "State")) %>% 
   select(-Id, -Id2) %>% 
   rename(Death_Rate = RATE, Education_Level = score) %>% 
   select(STATE, Death_Rate, Education_Level, everything())
 # edu_score_suicide
 
-edu_suicide_scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
+scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
   geom_point() +
   geom_smooth(method = "lm", 
               se = TRUE) +
   labs(x = "Education Level",
        y = "Suicide Death Rate",
        title = "Education Level Score and Suicide Death Rate of 50 US States in 2017")
-edu_suicide_scatter
-
+scatter
 ```
