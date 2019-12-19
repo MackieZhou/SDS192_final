@@ -1,6 +1,6 @@
 # Suicide and Education
 
-__Final Project for SDS 192__
+__Final Project for SDS 192__  
 __GitHub__: https://github.com/MackieZhou/SDS192_final
 
 ## [Blogpost](https://mackiezhou.github.io/SDS192_final/index.html)
