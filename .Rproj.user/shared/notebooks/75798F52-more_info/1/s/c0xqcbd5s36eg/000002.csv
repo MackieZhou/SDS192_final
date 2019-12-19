@@ -1,0 +1,37 @@
+"0","# read the suicide df into R"
+"0","suicide_by_state <- read_csv(""Suicide_Mortality_by_State.csv"")"
+"2","Parsed with column specification:
+cols(
+  YEAR = [32mcol_double()[39m,
+  STATE = [31mcol_character()[39m,
+  RATE = [32mcol_double()[39m,
+  DEATHS = [32mcol_number()[39m,
+  URL = [31mcol_character()[39m
+)
+"
+"0","# read the 50 state names&codes df into R"
+"0","State_names <- read_csv(""50State_names_and_codes.csv"")"
+"2","Parsed with column specification:
+cols(
+  State = [31mcol_character()[39m,
+  Abbrev = [31mcol_character()[39m,
+  Code = [31mcol_character()[39m
+)
+"
+"0","# read the education attainment w/ score df into R"
+"0","Edu_score_by_state <- read_csv(""Estimate_Educational_attainment_weighted.csv"")"
+"2","Missing column names filled in: 'X10' [10]"
+"2","Parsed with column specification:
+cols(
+  Id = [31mcol_character()[39m,
+  Id2 = [32mcol_double()[39m,
+  State = [31mcol_character()[39m,
+  `Less than high school graduate - Percent` = [32mcol_double()[39m,
+  `High school graduate (includes equivalency) - Percent` = [32mcol_double()[39m,
+  `Some college or associate's degree - Percent` = [32mcol_double()[39m,
+  `Bachelor's degree or higher - Percent` = [32mcol_double()[39m,
+  `raw score` = [32mcol_double()[39m,
+  score = [32mcol_double()[39m,
+  X10 = [32mcol_double()[39m
+)
+"

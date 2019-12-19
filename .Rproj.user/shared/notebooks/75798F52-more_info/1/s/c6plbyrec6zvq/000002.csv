@@ -1,0 +1,36 @@
+"0","# read the ecudational attainment df into R"
+"0","Edu_complete <- read_csv(""Estimate_Educational_attainment_2017.csv"")"
+"2","Parsed with column specification:
+cols(
+  .default = col_double(),
+  Id = [31mcol_character()[39m,
+  State = [31mcol_character()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"0","# read the suicide df into R"
+"0","suicide_by_state <- read_csv(""Suicide_Mortality_by_State.csv"")"
+"2","Parsed with column specification:
+cols(
+  YEAR = [32mcol_double()[39m,
+  STATE = [31mcol_character()[39m,
+  RATE = [32mcol_double()[39m,
+  DEATHS = [32mcol_number()[39m,
+  URL = [31mcol_character()[39m
+)
+"
+"0","# read the 50 state names&codes df into R"
+"0","State_names <- read_csv(""50State_names_and_codes.csv"")"
+"2","Parsed with column specification:
+cols(
+  State = [31mcol_character()[39m,
+  Abbrev = [31mcol_character()[39m,
+  Code = [31mcol_character()[39m
+)
+"
+"0","# US_map"
+"0","US_map<-USAboundaries::us_states(resolution = ""high"") %>%"
+"0","  mutate(lon = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[1]]),"
+"0","         lat = purrr::map_dbl(geometry, ~sf::st_centroid(.x)[[2]]))"
+"0",""

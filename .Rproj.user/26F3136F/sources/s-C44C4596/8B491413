@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1575836531965.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8B491413",
+    "lastKnownWriteTime" : 1576778370,
+    "last_content_update" : 1576779026127,
+    "path" : "D:/goodgoodstudy/SDS192/final_project/SDS192_final/more_info.Rmd",
+    "project_path" : "more_info.Rmd",
+    "properties" : {
+        "cursorPosition" : "56,109",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "41"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
