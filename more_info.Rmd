@@ -121,13 +121,13 @@ Edu_percent <- arrange(Edu_percent, Education, Percentage)
 Edu_percent$State <- factor(Edu_percent$State, levels = unique(Edu_percent$State)) 
 
 edu <- ggplot(data = Edu_percent, 
-       mapping = aes(x = State,
-                     y = Percentage, 
-                     fill = factor(Education, 
-                                   levels=c("Less than high school graduate",
-                                            "High school graduate (includes equivalency)",
-                                            "Some college or associate's degree",
-                                            "Bachelor's degree or higher")))) +
+              mapping = aes(x = State,
+                            y = Percentage, 
+                            fill = factor(Education, 
+                                          levels=c("Less than high school graduate",
+                                                   "High school graduate (includes equivalency)",
+                                                   "Some college or associate's degree",
+                                                   "Bachelor's degree or higher")))) +
   geom_bar(position="fill", 
            stat="identity",
            width = 0.7) +
@@ -165,7 +165,7 @@ layout <- "
   A#
   A#
   A#"
-  
+
 edu + edu_map +
   plot_layout(design = layout)
 
