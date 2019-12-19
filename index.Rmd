@@ -35,6 +35,7 @@ library(maps)
 library(USAboundaries)
 library(plotly)
 library(widgetframe)
+library(scales)
 
 # read the ecudational attainment df into R
 Edu_complete <- read_csv("Estimate_Educational_attainment_2017.csv")
@@ -66,14 +67,15 @@ suicide_2017 <- suicide_by_state %>%
 edu_score_suicide <- suicide_2017 %>% 
   inner_join(Edu_complete, by = c("STATE" = "State")) %>% 
   select(-Id, -Id2) %>% 
-  rename(Death_Rate = RATE, Education_Level = score) %>% 
+  rename(Death_Rate100 = RATE, Education_Level = score) %>% 
+  mutate(Death_Rate = Death_Rate100/100) %>% 
   select(STATE, Death_Rate, Education_Level, everything())
-# edu_score_suicide
 
 scatter <- ggplot(edu_score_suicide, aes(x = Education_Level, y = Death_Rate)) +
   geom_point() +
   geom_smooth(method = "lm", 
               se = TRUE) +
+  scale_y_continuous(labels = percent) +
   labs(x = "Education Level",
        y = "Suicide Death Rate",
        title = "Education Level Score and Suicide Death Rate of 50 US States in 2017")
