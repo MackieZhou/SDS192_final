@@ -52,9 +52,9 @@ US_map<-USAboundaries::us_states(resolution = "high") %>%
 
 # Suicide Death Rate
 
-Suicide is one of the several major causes of death in the US. Suicide death rate varies significantly across the nation. The data of suicide mortality by state is from _National Center for Health Statistics_, adjusted for differences in age-distribution and population size. From the data, we see that Montana has the highest suicide death rate of 28.9%, while New York has the lowest suicide death rate of 8.1%. The range is __20.8%__.
+Suicide is one of the several major causes of death in the US. Suicide death rate varies significantly across the nation. The data of suicide mortality by state is from _National Center for Health Statistics_^[Suicide Mortality by State, https://www.cdc.gov/nchs/pressroom/sosmap/suicide-mortality/suicide.htm], adjusted for differences in age-distribution and population size. From the data, we see that Montana has the highest suicide death rate of 28.9%, while New York has the lowest suicide death rate of 8.1%. The range is __20.8%__.
 
-From the map, we find that the west has higher overall suicide death rate than the east, while a strict geographic trend cannot be observed. Therefore, we want to explore __other factors that may account for the various suicide death rates among states__ in the US.
+From the map, we find that the west has higher overall suicide death rate than the east, while a strict geographic trend cannot be observed. Therefore, we want to explore __other factors, including education level, that may account for the various suicide death rates among states__ in the US.
 
 ```{r, echo = FALSE}
 # select only data in 2017 and optimize the df
@@ -101,7 +101,7 @@ ggplotly(suicide_map) %>%
 
 # Estimate Educational Attainment
 
-One of the many possible reasons that account for the various suicide death rate is education level. Educational attainment is defined as the highest level of education that an individual has completed. The Estimate Educational Attainment data is from the United States Census Bureau. District of Columbia, followed by Massachusetts, has the highest percent(21.8%) of people aged 18-24 holding a bachelor or higher degree; while Nevada has the lowest percent(5.3%). The range is __16.5%__.
+One of the many possible reasons that account for the various suicide death rate is education level. Educational attainment is defined as the highest level of education that an individual has completed. The Estimate Educational Attainment data is from the United States Census Bureau^[ EDUCATIONAL ATTAINMENT 2013-2017 American Community Survey 5-Year Estimates, https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_S1501&prodType=table]. District of Columbia, followed by Massachusetts, has the highest percent(21.8%) of people aged 18-24 holding a bachelor or higher degree; while Nevada has the lowest percent(5.3%). The range is __16.5%__.
 
 Below you can find a stacked bar graph of educational attainment of 52 states and regions in the US. States and regions are in the __descending order__ of percentages of people holding a bachelor or higher degree.
 
@@ -196,4 +196,6 @@ scatter
 
 # Conclusion & Significance
 
-__Moderate negative correlation__ is found between education attainment and suicide rate, which means that the higher the education attainment, the lower the suicide rate. Possible explanation for this result could be that people who do not drop out of school tend to have better family background, thus they are less likely to have childhood trauma (abusive parents). The result emphasizes the importance of social determinants in suicide risk. 
+__Moderate negative correlation__ is found between education attainment and suicide rate, which means that the higher the education attainment, the lower the suicide rate. Possible explanation for this result could be that people who do not drop out of school tend to have better family background, thus they are less likely to have childhood trauma (abusive parents), and are more likely to commit suicide. The result emphasizes the importance of social determinants in suicide risk. 
+
+# Citation
